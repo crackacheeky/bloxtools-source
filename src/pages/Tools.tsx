@@ -10,20 +10,27 @@ const Tools = () => {
     visible: { 
       opacity: 1,
       transition: { 
-        staggerChildren: 0.2
+        staggerChildren: 0.2,
+        delayChildren: 0.3
       }
     }
   };
   
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
   return (
     <div className="min-h-screen bg-blox-gradient">
       <div className="container mx-auto px-4 py-8">
-        <Navbar />
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Navbar />
+        </motion.div>
         
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12"
