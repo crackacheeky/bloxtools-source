@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				blox: {
+					teal: '#00d7dc',
+					dark: '#111111',
+					card: '#121212',
+					gradient: {
+						from: '#121212',
+						to: '#143736',
+					},
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -89,7 +99,11 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'blox-gradient': 'linear-gradient(to bottom right, #121212, #143736)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
