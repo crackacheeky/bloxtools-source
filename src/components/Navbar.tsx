@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
-import { Settings } from 'lucide-react';
 import { useConfig } from '@/context/ConfigContext';
 
 const Navbar: React.FC = () => {
@@ -16,10 +15,6 @@ const Navbar: React.FC = () => {
         <NavLink to="/tools">Tools</NavLink>
         <NavLink to="/faq">FAQ</NavLink>
         <NavLink to="/contact">Contact</NavLink>
-        <NavLink to="/config" className="flex items-center">
-          <Settings size={16} className="mr-2" />
-          Config
-        </NavLink>
       </div>
     </nav>
   );

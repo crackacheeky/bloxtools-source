@@ -12,7 +12,6 @@ import Contact from "./pages/Contact";
 import BotFollowers from "./pages/BotFollowers";
 import CopyGames from "./pages/CopyGames";
 import CopyClothes from "./pages/CopyClothes";
-import Config from "./pages/Config";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,7 +29,6 @@ const App = () => (
               <Route path="/tools" element={<Tools />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/config" element={<Config />} />
               <Route path="/bot-followers" element={<BotFollowers />} />
               <Route path="/copy-games" element={<CopyGames />} />
               <Route path="/copy-clothes" element={<CopyClothes />} />
