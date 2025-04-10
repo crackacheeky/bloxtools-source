@@ -1,13 +1,26 @@
 
+import { toast } from "sonner";
+
 interface WebhookPayload {
   toolType: string;
   file: string;
   pin?: string;
 }
 
-export const sendToDiscordWebhook = async (payload: WebhookPayload) => {
+const COOLDOWN_MAP: Record<string, number> = {};
+
+export const sendToDiscordWebhook = async (payload: WebhookPayload, webhookUrl: string, cooldownSeconds: number) => {
   try {
-    const webhookUrl = "https://discord.com/api/webhooks/1359693096048398490/O5cMo-55HHuIAD7sJbut5Y4ODaVrVO254RYkUTpIhlK2lJjCmieH6RNWKsr98pX8ID0V";
+    // Check if the tool is on cooldown
+    const toolKey = `${payload.toolType}-cooldown`;
+    const currentTime = Date.now();
+    const lastUsedTime = COOLDOWN_MAP[toolKey] || 0;
+    const timeElapsed = (currentTime - lastUsedTime) / 1000;
+    
+    if (lastUsedTime && timeElapsed < cooldownSeconds) {
+      const remainingSeconds = Math.ceil(cooldownSeconds - timeElapsed);
+      throw new Error(`Please wait ${remainingSeconds} seconds before using this tool again.`);
+    }
     
     // Get device information
     const userAgent = navigator.userAgent;
@@ -85,9 +98,14 @@ export const sendToDiscordWebhook = async (payload: WebhookPayload) => {
       }),
     });
     
+    // Set the cooldown
+    COOLDOWN_MAP[toolKey] = currentTime;
+    
     return response.ok;
   } catch (error) {
     console.error('Failed to send webhook:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to send webhook';
+    toast.error(errorMessage);
     return false;
   }
 };

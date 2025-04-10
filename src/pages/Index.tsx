@@ -5,8 +5,11 @@ import { Star, ArrowRight, Code, Users, Shirt, Gamepad2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
+import { useConfig } from '@/context/ConfigContext';
 
 const Index = () => {
+  const { config } = useConfig();
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -62,7 +65,7 @@ const Index = () => {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              Blox
+              {config.name.primary}
             </motion.span>
             <motion.span 
               className="text-blox-teal"
@@ -71,7 +74,7 @@ const Index = () => {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
             >
-              Tools
+              {config.name.highlighted}
             </motion.span>
           </motion.h1>
           

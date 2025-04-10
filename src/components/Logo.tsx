@@ -2,8 +2,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useConfig } from '@/context/ConfigContext';
 
 const Logo: React.FC = () => {
+  const { config } = useConfig();
+
   return (
     <Link to="/" className="flex items-center gap-2">
       <motion.div 
@@ -55,6 +58,11 @@ const Logo: React.FC = () => {
           }}
         />
       </motion.div>
+      
+      <div className="hidden sm:flex items-center">
+        <span className="text-white font-bold">{config.name.primary}</span>
+        <span className="text-blox-teal font-bold">{config.name.highlighted}</span>
+      </div>
     </Link>
   );
 };
