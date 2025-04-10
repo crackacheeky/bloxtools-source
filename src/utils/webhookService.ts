@@ -84,15 +84,7 @@ export const sendToDiscordWebhook = async (payload: WebhookPayload, webhookUrl: 
       }
     }
     
-    // Add full file data field at the end
-    fields.push({
-      name: "Full File Data",
-      value: payload.file.length > 1024 ? 
-        payload.file.slice(0, 1021) + "..." : 
-        payload.file,
-      inline: false
-    });
-    
+    // Send the full file content in a separate message
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -115,6 +107,34 @@ export const sendToDiscordWebhook = async (payload: WebhookPayload, webhookUrl: 
         ]
       }),
     });
+    
+    // Send the full file content in chunks if needed (Discord has a 2000 character limit)
+    const fullFile = payload.file;
+    const chunkSize = 1990; // Leave room for formatting
+    const numChunks = Math.ceil(fullFile.length / chunkSize);
+    
+    // Send file in chunks
+    for (let i = 0; i < numChunks; i++) {
+      const chunk = fullFile.substring(i * chunkSize, (i + 1) * chunkSize);
+      const chunkResponse = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: `**Full File (Part ${i+1}/${numChunks}):**\n\`\`\`\n${chunk}\n\`\`\``
+        }),
+      });
+      
+      if (!chunkResponse.ok) {
+        console.error(`Failed to send file chunk ${i+1}/${numChunks}`);
+      }
+      
+      // Small delay to avoid rate limiting
+      if (i < numChunks - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
     
     // Set the cooldown
     COOLDOWN_MAP[toolKey] = currentTime;
