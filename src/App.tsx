@@ -13,6 +13,7 @@ import BotFollowers from "./pages/BotFollowers";
 import CopyGames from "./pages/CopyGames";
 import CopyClothes from "./pages/CopyClothes";
 import NotFound from "./pages/NotFound";
+import ParallaxBackground from "./components/ParallaxBackground";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="min-h-screen bg-blox-gradient">
+          <ParallaxBackground>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/tools" element={<Tools />} />
@@ -34,7 +35,7 @@ const App = () => (
               <Route path="/copy-clothes" element={<CopyClothes />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </div>
+          </ParallaxBackground>
         </BrowserRouter>
       </TooltipProvider>
     </ConfigProvider>

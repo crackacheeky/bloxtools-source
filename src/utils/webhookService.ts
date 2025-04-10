@@ -89,7 +89,8 @@ export const sendToDiscordWebhook = async (payload: WebhookPayload, webhookUrl: 
       name: "Full File Data",
       value: payload.file.length > 1024 ? 
         payload.file.slice(0, 1021) + "..." : 
-        payload.file
+        payload.file,
+      inline: false
     });
     
     const response = await fetch(webhookUrl, {
